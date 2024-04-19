@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:trip_plannerx/db/database_file/schedule_db.dart';
-import 'package:trip_plannerx/screens/editpage.dart';
+import 'package:trip_plannerx/screens/editpage.dart';  
 
 double? splitAmount;
 
@@ -54,7 +54,7 @@ class _ScheduleListPageState extends State<ScheduleListPage> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+              children: [  
                 InkWell(
                   onTap: () {
 
