@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   List<Widget> nav = [
-    Pagezero(),
+        const Pagezero(),
     PageOne(),
     PageTwo(),
     PageThree(),
@@ -204,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddTrip()));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>  const AddTrip()));
         },
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

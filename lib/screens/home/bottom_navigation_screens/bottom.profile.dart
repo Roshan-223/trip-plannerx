@@ -1,34 +1,60 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:trip_plannerx/screens/loginscreen.dart';
+import 'dart:io';
 
-class BottomProfile extends StatelessWidget {
-  BottomProfile({super.key});
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trip_plannerx/db/database_file/profile_db_function.dart';
+import 'package:trip_plannerx/screens/profile_screens/about.dart';
+import 'package:trip_plannerx/screens/profile_screens/addnotes.dart';
+import 'package:trip_plannerx/screens/profile_screens/blogs.dart';
+import 'package:trip_plannerx/screens/profile_screens/images.dart';
+import 'package:trip_plannerx/widgets/alertboxprofile_edit_username.dart';
+import 'package:trip_plannerx/widgets/alertboxprofile_login.dart';
+
+class BottomProfile extends StatefulWidget {
+  const BottomProfile({super.key});
+
+  @override
+  State<BottomProfile> createState() => _BottomProfileState();
+}
+
+class _BottomProfileState extends State<BottomProfile> {
   final List<IconData> items = [
     Icons.edit_document,
     Icons.image_outlined,
     Icons.movie_edit,
     Icons.info_outline,
-    Icons.share_outlined,
     Icons.logout
   ];
 
-  final List<String> text = [
-    'Add Notes',
-    'Images',
-    'Blogs',
-    'About',
-    'Share',
-    'LogOut'
+  final List<String> text = ['Add Notes', 'Images', 'Blogs', 'About', 'LogOut'];
+
+  final List<Widget> screens = [
+    const AddNotes(),
+    const ImagesPage(),
+    const BlogsPage(),
+    const AboutPage(),
+    const SizedBox(),
   ];
+  final TextEditingController _nameController = TextEditingController();
+  final profileService = ProfileService();
+  String user = 'User';
+  File? _selectedImage;
+  @override
+  void initState() {
+    super.initState();
+    final profile = profileService.getProfile(); // Load the profile from Hive
+    if (profile != null) {
+      user = profile.userName;
+      if (profile.profilePicturepath != null) {
+        _selectedImage =
+            File(profile.profilePicturepath!); // Convert path to File
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> userdata() async {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool("loggedIn", false);
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -36,14 +62,29 @@ class BottomProfile extends StatelessWidget {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 40),
+            padding: const EdgeInsets.only(top: 50),
             child: ListTile(
-              leading: const CircleAvatar(
-                radius: 40,
+              leading: GestureDetector(
+                onTap: _pickImageFromGallery,
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: _selectedImage != null
+                      ? FileImage(_selectedImage!)
+                      : null,
+                  child: _selectedImage == null
+                      ? const Icon(
+                          Icons.person,
+                          size: 50,
+                        )
+                      : null,
+                ),
               ),
-              title: const Text('User'),
-              trailing:
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
+              title: Text(user),
+              trailing: IconButton(
+                  onPressed: () {
+                    editUserName();
+                  },
+                  icon: const Icon(Icons.edit)),
             ),
           ),
           const Divider(
@@ -54,7 +95,7 @@ class BottomProfile extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: items.length,
+              itemCount: text.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: Icon(
@@ -66,43 +107,65 @@ class BottomProfile extends StatelessWidget {
                     text[index],
                     style: const TextStyle(color: Colors.black),
                   ),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Confirm Logout"),
-                          content:
-                              const Text("Are you sure you want to log out?"),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Cancel"),
+                  onTap: index == 4
+                      ? () => showLogoutDialogue()
+                      : () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => screens[index],
                             ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginScreen()));
-                                userdata();
-                              },
-                              child: const Text("Logout"),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
+                          ),
                 );
               },
             ),
           ),
+            const SizedBox(height: 20),
+          const Text(
+            'App Version 1.0.0',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        profileService.saveProfile(user, pickedFile.path); // Save to Hive
+      });
+    }
+  }
+
+  void editUserName() {
+    AlertProfile(
+      context: context,
+      nameController: _nameController,
+      onNameChanged: (newName) {
+        setState(() {
+          user = newName;
+        });
+        profileService.saveProfile(
+            newName, _selectedImage?.path ?? ""); // Save to Hive
+      },
+    ).showEditNameDialog();
+  }
+
+  Future<void> userdata() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("loggedIn", false);
+  }
+
+  void logout() async {
+    userdata();
+  }
+
+  void showLogoutDialogue() {
+    Logout(context: context).showLogoutConfirmation(() => userdata());
   }
 }

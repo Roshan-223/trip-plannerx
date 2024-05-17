@@ -36,7 +36,7 @@ class _NavPageState extends State<NavPage> {
     const BottomSearch(),
     const ScheduleListPage(),
     const BottomFav(),
-     BottomProfile(),
+     const BottomProfile(),
   ];
 
   @override

@@ -4,15 +4,15 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:trip_plannerx/db/database_file/schedule_db.dart';
+import 'package:trip_plannerx/model/schedule_db.dart';
 import 'package:trip_plannerx/screens/home/contact_alertbox.dart';
 import 'package:trip_plannerx/screens/home/bottom_navigation_screens/bottom_schedule.dart';
-// import 'package:trip_plannerx/screens/schedule_page.dart';
+import 'package:trip_plannerx/screens/upcomingscreen.dart';
 
-// int myid = DateTime.now().millisecondsSinceEpoch;
 
 class AddTrip extends StatefulWidget {
-  const AddTrip({Key? key}) : super(key: key);
+
+  const AddTrip({Key? key,}) : super(key: key);
 
   @override
   State<AddTrip> createState() => _AddTripState();

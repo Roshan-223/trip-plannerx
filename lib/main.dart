@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:trip_plannerx/db/database_file/schedule_db.dart';
+import 'package:trip_plannerx/model/dream_db.dart';
+import 'package:trip_plannerx/model/favorite_db.dart';
+import 'package:trip_plannerx/model/images_blogs_db.dart';
+import 'package:trip_plannerx/model/profile_db.dart';
+import 'package:trip_plannerx/model/schedule_db.dart';
 import 'package:trip_plannerx/model/model.dart';
 import 'package:trip_plannerx/screens/loginscreen.dart';
 
@@ -9,8 +13,15 @@ void main() async{
   await  Hive.initFlutter();
   Hive.registerAdapter(LoginAdapter());
   Hive.registerAdapter(ScheduleAdapter());
-   await Hive.openBox<Schedule>('addtrip');
-
+  Hive.registerAdapter(ProfileAdapter());
+  Hive.registerAdapter(DreamAdapter());
+  Hive.registerAdapter(ImageBlogAdapter());
+  Hive.registerAdapter(FavoriteAdapter());
+  await Hive.openBox<Schedule>('addtrip');
+  await Hive.openBox<Profile>('addProfile');
+  await Hive.openBox<Dream>('dream_destination');
+  await Hive.openBox<ImageBlog>('imageblog');
+  await Hive.openBox<Favorite>('place');
   runApp( const MyApp());
 }
 

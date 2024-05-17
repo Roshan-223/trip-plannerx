@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
- class AppColors{
- static white(){
- return Colors.white;
-  }
-}
+//  class AppColors{
+//  static white(){
+//  return Colors.white;
+//   }
+// }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:trip_plannerx/screens/home/designs/colors.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page4.dart';
 
 class PageFour extends StatelessWidget {
@@ -76,9 +75,9 @@ class PageFour extends StatelessWidget {
                         ),
                         IconButton(
                             onPressed: () {},
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.favorite_border,
-                              color: AppColors.white(),
+                              color: Colors.white,
                             ))
                       ],
                     ),

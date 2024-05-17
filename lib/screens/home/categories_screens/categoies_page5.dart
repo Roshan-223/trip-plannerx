@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:trip_plannerx/screens/home/designs/colors.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page5.dart';
 
 class PageFive extends StatelessWidget {
@@ -65,10 +64,10 @@ class PageFive extends StatelessWidget {
                         children: [
                           Text(
                             text[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.white()),
+                                color: Colors.white),
                           ),
                           IconButton(
                               onPressed: () {},
