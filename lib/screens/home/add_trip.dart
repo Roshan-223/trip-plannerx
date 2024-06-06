@@ -9,10 +9,10 @@ import 'package:trip_plannerx/screens/home/contact_alertbox.dart';
 import 'package:trip_plannerx/screens/home/bottom_navigation_screens/bottom_schedule.dart';
 import 'package:trip_plannerx/screens/upcomingscreen.dart';
 
-
 class AddTrip extends StatefulWidget {
-
-  const AddTrip({Key? key,}) : super(key: key);
+  const AddTrip({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<AddTrip> createState() => _AddTripState();
@@ -190,10 +190,8 @@ class _AddTripState extends State<AddTrip> {
                         destination: _destinationController.text,
                         startDate: selectedStartDate!,
                         endDate: selectedEndDate!,
-                        splitAmount: splitAmount,
+                        splitAmount: splitAmount, 
                       ));
-
-                      // setState(() {});
 
                       Navigator.push(
                         context,

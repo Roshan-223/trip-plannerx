@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trip_plannerx/screens/home/bottom_navigation_screens/search_place.dart';
+import 'package:trip_plannerx/screens/home/categories_screens/catergories_page0.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page0.dart';
 
 class BottomSearch extends StatefulWidget {
@@ -82,11 +83,20 @@ class _BottomSearchState extends State<BottomSearch> {
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: ListTile(
                             leading: ClipOval(
-                              child: Image.network(
-                                place.imageUrl,
+                              child: FadeInImage.assetNetwork(
+                                placeholder: 'assets/image/pngtree-gray-network-placeholder-png-image_3416659.jpg',
+                                image: place.imageUrl,
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,
+                                imageErrorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/image/pngtree-gray-network-placeholder-png-image_3416659.jpg',
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
                             title: Text(place.title),
@@ -98,6 +108,8 @@ class _BottomSearchState extends State<BottomSearch> {
                                     title: place.title,
                                     imageUrl: place.imageUrl,
                                     description: place.description,
+                                    latitude: getLatitude(index),
+                                    longitude: getLatitude(index),
                                   ),
                                 ),
                               );

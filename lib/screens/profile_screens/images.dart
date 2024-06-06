@@ -2,26 +2,47 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:trip_plannerx/db/database_file/image_db_functions.dart';
 import 'package:trip_plannerx/model/images_blogs_db.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:trip_plannerx/screens/profile_screens/fullscreen_img.dart';
+import 'package:trip_plannerx/widgets/alertbox_img_delete.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class ImagesPage extends StatefulWidget {
-  const ImagesPage({Key? key}) : super(key: key);
+  final int tripId;
+
+  const ImagesPage({Key? key, required this.tripId}) : super(key: key);
 
   @override
   State<ImagesPage> createState() => _ImagesPageState();
 }
 
 class _ImagesPageState extends State<ImagesPage> {
-  final String imageBoxName = 'scheduleImages';
-  late Box<ImageBlog> imageBlogBox;
+  late Box<ImageBlog>? imageBlogBox;
   List<String> images = [];
 
   @override
   void initState() {
     super.initState();
-    openImageBox();
+    requestPermissions();
+    initDbAndLoadImages();
+  }
+
+  Future<void> requestPermissions() async {
+    await Permission.storage.request();
+    await Permission.camera.request();
+  }
+
+  Future<void> initDbAndLoadImages() async {
+    await ImageDbService.init();
+    setState(() {
+      if (widget.tripId == -1) {
+        images = ImageDbService.getAllImagesFromAllTrips();
+      } else {
+        images = ImageDbService.getImages(widget.tripId.toString());
+      }
+    });
   }
 
   @override
@@ -31,7 +52,7 @@ class _ImagesPageState extends State<ImagesPage> {
         title: const Text('Images'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addPhotoFromGallery,
+        onPressed: _addPhotosFromGallery,
         child: const Icon(Icons.add_a_photo_outlined),
       ),
       body: Padding(
@@ -49,40 +70,20 @@ class _ImagesPageState extends State<ImagesPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        FullScreenImagePage(imagePath: images[index]),
+                    builder: (context) => FullScreenImagePage(
+                      imagePath: images[index],
+                    ),
                   ),
                 );
               },
               onLongPress: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Delete Image?'),
-                    content: const Text(
-                        'Are you sure you want to delete this image?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _deleteImage(index);
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Delete'),
-                      ),
-                    ],
-                  ),
+                ImgDeleteDialog.showDeleteDialog(
+                  context,
+                  index,
+                  () => _deleteImage(index),
                 );
               },
-              child: Image.file(
-                File(images[index]),
-                fit: BoxFit.cover,
-              ),
+              child: _buildImageWidget(images[index]),
             );
           },
         ),
@@ -90,37 +91,37 @@ class _ImagesPageState extends State<ImagesPage> {
     );
   }
 
-  Future<void> openImageBox() async {
-    final appDocumentDirectory =
-        await path_provider.getApplicationDocumentsDirectory();
-    Hive.init(appDocumentDirectory.path);
-    imageBlogBox = await Hive.openBox<ImageBlog>(imageBoxName);
+  Widget _buildImageWidget(String imagePath) {
+    File imageFile = File(imagePath);
+    if (!imageFile.existsSync()) {
+      return Container(
+        color: Colors.grey[300],
+        child: const Icon(Icons.error),
+      );
+    }
+    return Image.file(
+      imageFile,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Future<void> _addPhotosFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
+      List<String> newImages = pickedFiles.map((file) => file.path).toList();
+      await ImageDbService.addImages(newImages, widget.tripId.toString());
+      setState(() {
+        images = ImageDbService.getImages(widget.tripId.toString());
+      });
+    }
+  }
+
+  void _deleteImage(int index) async {
+    await ImageDbService.deleteImage(index, widget.tripId.toString());
     setState(() {
-      images = imageBlogBox.get(0)?.images ?? [];
+      images = ImageDbService.getImages(widget.tripId.toString());
     });
   }
-
-  Future<void> _addPhotoFromGallery() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final imageBlog = imageBlogBox.get(0) ?? ImageBlog(images: [], blogs: []);
-      imageBlog.images.add(pickedFile.path);
-      imageBlogBox.put(0, imageBlog);
-      setState(() {
-        images = imageBlog.images;
-      });
-    }
-  }
-
-  void _deleteImage(int index) {
-    final imageBlog = imageBlogBox.get(0);
-    if (imageBlog != null) {
-      imageBlog.images.removeAt(index);
-      imageBlogBox.put(0, imageBlog);
-      setState(() {
-        images = imageBlog.images;
-      });
-    }
-  }
 }
+

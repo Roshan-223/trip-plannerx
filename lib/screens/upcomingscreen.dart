@@ -40,6 +40,16 @@ class _UpcomingState extends State<Upcoming> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+             if (upcomingTrips.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'No upcoming trips',
+                    
+                  ),
+                ),
+              )
+              else
             Expanded(
               child: ListView.builder(
                 itemCount: upcomingTrips.length,
@@ -54,7 +64,7 @@ class _UpcomingState extends State<Upcoming> {
                   }
                   return Card(
                     elevation: 5,
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: const Color.fromARGB(255, 248, 243, 243),
                     // color:Colors.white,
                     child: ListTile(
                       title: Column(
@@ -126,7 +136,7 @@ class _UpcomingState extends State<Upcoming> {
                                     destination: schedule.destination,
                                     startDate: schedule.startDate,
                                     endDate: schedule.endDate,
-                                    splitAmount: splitAmount,
+                                    splitAmount: splitAmount, 
                                   ),
                                 );
                               },
@@ -220,12 +230,13 @@ class _UpcomingState extends State<Upcoming> {
       final schedule = scheduleBox!.getAt(i);
 
       if (schedule != null) {
-        if (schedule.endDate.isAfter(now)) {
-          upcomingTrips.add(schedule);
+        if (schedule.endDate.isBefore(now)) {
+          completedBox?.add(schedule);
+          scheduleBox!.deleteAt(i);
         } else {
+          upcomingTrips.add(schedule);
           // Move to completed box if end date has passed
-          completedBox?.add(schedule); 
-          scheduleBox!.deleteAt(i); // Remove from upcoming
+           // Remove from upcoming
         }
       }
     }

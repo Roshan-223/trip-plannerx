@@ -12,7 +12,7 @@ class Schedule {
   DateTime endDate;
   @HiveField(4)
   double? splitAmount;
-  Schedule({required this.companion,required this.destination, required this.startDate, required this.endDate,required this.splitAmount});
-
+  Schedule({required this.companion,required this.destination, required this.startDate, required this.endDate,required this.splitAmount,});
+  
   get contactname => null;
 }

@@ -54,11 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> nav = [
         const Pagezero(),
-    PageOne(),
-    PageTwo(),
-    PageThree(),
-    PageFour(),
-    PageFive()
+    const PageOne(),
+    const PageTwo(),
+    const PageThree(),
+    const PageFour(),
+    const PageFive()
   ];
 
   @override
@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: MediaQuery.of(context).size.width,
                           margin: const EdgeInsets.symmetric(horizontal: 5.0),
                           decoration: BoxDecoration(
-                            color: Colors.amber,
+                            color: const Color.fromARGB(255, 218, 216, 207),
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(
                                 image: NetworkImage(image), fit: BoxFit.cover),
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 120,
                         width: 80,
                         decoration: BoxDecoration(
-                          color: Colors.amber,
+                            color: const Color.fromARGB(255, 218, 216, 207),
                           borderRadius: BorderRadius.circular(15),
                           image: DecorationImage(
                               image: NetworkImage(pics[index]),

@@ -35,7 +35,7 @@ class _NavPageState extends State<NavPage> {
     const HomeScreen(descriptions: [],titles: [],imageUrls: []),
     const BottomSearch(),
     const ScheduleListPage(),
-    const BottomFav(),
+    const FavoritePlacesPage(),
      const BottomProfile(),
   ];
 

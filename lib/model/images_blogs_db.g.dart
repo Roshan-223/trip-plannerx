@@ -17,16 +17,22 @@ class ImageBlogAdapter extends TypeAdapter<ImageBlog> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ImageBlog(
-      images: (fields[0] as List).cast<String>(), blogs: [],
+      tripId: fields[0] as String,
+      images: (fields[1] as List).cast<String>(),
+      blogs: (fields[2] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ImageBlog obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.images);
+      ..write(obj.tripId)
+      ..writeByte(1)
+      ..write(obj.images)
+      ..writeByte(2)
+      ..write(obj.blogs);
   }
 
   @override

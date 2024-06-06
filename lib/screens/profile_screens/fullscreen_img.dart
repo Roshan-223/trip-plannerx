@@ -15,6 +15,7 @@ class FullScreenImagePage extends StatelessWidget {
       ),
       body: Center(
         child: Image.file(
+          
           File(imagePath),
         ),
       ),

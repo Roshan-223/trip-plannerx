@@ -6,7 +6,7 @@ import 'package:trip_plannerx/model/images_blogs_db.dart';
 import 'package:trip_plannerx/model/profile_db.dart';
 import 'package:trip_plannerx/model/schedule_db.dart';
 import 'package:trip_plannerx/model/model.dart';
-import 'package:trip_plannerx/screens/loginscreen.dart';
+import 'package:trip_plannerx/screens/splash_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +22,7 @@ void main() async{
   await Hive.openBox<Dream>('dream_destination');
   await Hive.openBox<ImageBlog>('imageblog');
   await Hive.openBox<Favorite>('place');
+  await Hive.openBox<int>('tripIds'); 
   runApp( const MyApp());
 }
 
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }

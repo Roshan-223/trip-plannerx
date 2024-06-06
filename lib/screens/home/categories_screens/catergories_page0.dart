@@ -2,16 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page0.dart';
+double getLatitude(int index) {
+  switch (index) {
+    case 0:
+      return 32.2574; //  Manali
+    case 1:
+      return 10.12338; // Top station
+    case 2:
+      return 9.75333; // Illikalkallu
+    case 3:
+      return 11.36923; //  Dophin Nose
+    default:
+      return 0.0;
+  }
+}
+
+double getLongitude(int index) {
+  switch (index) {
+    case 0:
+      return 77.1748; //  Manali
+    case 1:
+      return 77.24484; // Top station
+    case 2:
+      return 76.82110; //  Illikalkallu
+    case 3:
+      return 76.85922; // Dophin Nose
+    default:
+      return 0.0;
+  }
+}
 
 class Pagezero extends StatefulWidget {
-   const Pagezero({super.key,});
+  const Pagezero({super.key});
 
   @override
   State<Pagezero> createState() => _PagezeroState();
 }
 
 class _PagezeroState extends State<Pagezero> {
-   Box<Favorite>? fava;
+  Box<Favorite>? fava;
+
   final List<String> img = [
     "https://static2.tripoto.com/media/filter/tst/img/415096/TripDocument/1550220068_1550219789211.jpg",
     "https://www.fabhotels.com/blog/wp-content/uploads/2019/09/Munnar-Kerala-1.jpg",
@@ -23,7 +53,7 @@ class _PagezeroState extends State<Pagezero> {
     'Manali',
     'Top station',
     'Illikalkallu',
-    'Dophin Nose'
+    'Dophin Nose'    
   ];
 
   final List<String> descriptions = [
@@ -33,8 +63,28 @@ class _PagezeroState extends State<Pagezero> {
     'to Dolphin’s Nose, a viewpoint that offers an enthralling view of the blue mountains of Nilgiris and the lush green tea estates on its slopes. Let your eyes and mind freely wander along the marvellous view of unending plains and lush green hillocks from the vantage point Dolphin Nose offers. At 6600 ft above sea level, the view from the dolphin’s nose is breath-taking. An ideal spot for those interested in trekking, the trail to the Dolphin’s Nose covers a distance of 3 kms in the Palani Hill Range. This view point is a favourite among the tourists who come to adore the glory of the Princess of hill-stations. Kodaikanal proudly fosters this location as an ideal spot from which one may marvel at the glory of its lush green landscapes, rough terrains, and the rugged charm of the towns.'
   ];
 
-  // List to track if each item is favorited or not
-  final List<bool> isFavorite = List.generate(4, (index) => false);
+  final Map<String, bool> isFavorite = {};
+
+  @override
+  void initState() {
+    super.initState();
+    openBox();
+  }
+
+  Future<void> openBox() async {
+    fava = await Hive.openBox<Favorite>('place');
+    loadFavorites();
+  }
+
+  void loadFavorites() {
+    final favoritePlaces =
+        fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    setState(() {
+      for (var placeName in place) {
+        isFavorite[placeName] = favoritePlaces.contains(placeName);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +94,7 @@ class _PagezeroState extends State<Pagezero> {
       ),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: 4,
+          itemCount: place.length,
           itemBuilder: (context, int index) {
             return GestureDetector(
               onTap: () {
@@ -55,6 +105,8 @@ class _PagezeroState extends State<Pagezero> {
                       title: place[index],
                       imageUrl: img[index],
                       description: descriptions[index],
+                      latitude: getLatitude(index),
+                      longitude: getLongitude(index),
                     ),
                   ),
                 );
@@ -80,8 +132,8 @@ class _PagezeroState extends State<Pagezero> {
                 height: 200,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Flex(
-                    direction: Axis.vertical,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,33 +147,33 @@ class _PagezeroState extends State<Pagezero> {
                             ),
                           ),
                           IconButton(
-                            onPressed: ()async {
-                              Favorite name= Favorite(place[index]);
-                           fava = await Hive.openBox<Favorite>('place'); 
-                             var key = await fava?.add(name);
-  
-  // Check if the object has been saved
-  if (key != null) {
-    // Object has been saved
-    print('Favorite object saved with key: $key');
-    
-    // Update the UI to reflect the change in favorite status
-    setState(() {
-      isFavorite[index] = !isFavorite[index];
-    });
-  } else {
-    // Object couldn't be saved
-    print('Failed to save Favorite object');
-  }
+                            onPressed: () async {
+                              bool currentlyFavorite =
+                                  isFavorite[place[index]] ?? false;
+                              if (currentlyFavorite) {
+                                var key = fava?.keys.firstWhere(
+                                    (key) =>
+                                        fava?.get(key)?.place == place[index],
+                                    orElse: () => null);
+                                if (key != null) {
+                                  await fava?.delete(key);
+                                }
+                              } else {
+                                Favorite favorite = Favorite(place[index]);
+                                await fava?.add(favorite);
+                              }
+
+                              setState(() {
+                                isFavorite[place[index]] = !currentlyFavorite;
+                              });
                             },
                             icon: Icon(
-                              isFavorite[index]
+                              isFavorite[place[index]] == true
                                   ? Icons.favorite
                                   : Icons.favorite_border,
-                              color: isFavorite[index]
-                                  ? Colors.red // Change the color when favorited
+                              color: isFavorite[place[index]] == true
+                                  ? Colors.red
                                   : Colors.white,
-
                             ),
                           ),
                         ],

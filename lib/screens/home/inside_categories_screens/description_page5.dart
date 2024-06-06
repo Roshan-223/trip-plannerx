@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page0.dart';
 
 class DescriptionPage5 extends StatelessWidget {
   const DescriptionPage5(
       {super.key,
       required this.title,
       required this.imageUrl,
-      required this.description});
+      required this.description, required this.latitude, required this.longitude});
   final String title;
   final String imageUrl;
   final String description;
+  final double latitude;
+  final double longitude;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +41,9 @@ class DescriptionPage5 extends StatelessWidget {
               height: 35,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                launchMap(latitude, longitude);
+              },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 22.0),
                 child: Text('Direction'),

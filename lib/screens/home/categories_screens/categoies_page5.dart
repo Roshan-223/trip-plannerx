@@ -1,15 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page5.dart';
+double getLatitude9(int index) {
+  switch (index) {
+    case 0:
+      return 27.173891;
+    case 1:
+      return 28.5245; 
+    case 2:
+      return 28.6562; 
+    case 3:
+      return 25.3176; 
+    default:
+      return 0.0;
+  }
+}
 
-class PageFive extends StatelessWidget {
-  PageFive({super.key});
-  final List<String> pic = [
+double getLongitude10(int index) {
+  
+  switch (index) {
+    case 0:
+      return 78.042068; 
+    case 1:
+      return 77.1855; 
+    case 2:
+      return 77.2410; 
+    case 3:
+      return 82.9739; 
+    default:
+      return 0.0;
+  }
+}
+
+class PageFive extends StatefulWidget {
+  const PageFive({super.key});
+
+  @override
+  State<PageFive> createState() => _PageFiveState();
+}
+
+class _PageFiveState extends State<PageFive> {
+    Box<Favorite>? fava;
+
+  final List<String> img = [
     "https://miro.medium.com/v2/resize:fit:1400/format:webp/0*uEnJuRoUCKEUZZI_.jpg",
     "https://miro.medium.com/v2/resize:fit:1400/format:webp/0*RcUbE5L_S9-L_lXV.jpg",
     "https://images.inuth.com/2017/02/red-fort-preset3.jpg",
     "https://th-thumbnailer.cdn-si-edu.com/0Tog4P1WeTD51sLUT4zUW4z-A-o=/1000x750/filters:no_upscale()/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/morning-on-the-Ganges-River-Varanasi-631.jpg"
   ];
-  final List<String> text = [
+
+  final List<String> place = [
     'Taj Mahal',
     'Qutub Minar',
     'Red Fort',
@@ -23,19 +64,53 @@ class PageFive extends StatelessWidget {
     "The land of Varanasi (Kashi) has been the ultimate pilgrimage spot for Hindus for ages. Hindus believe that one who is graced to die on the land of Varanasi would attain salvation and freedom from the cycle of birth and re-birth. Abode of Lord Shiva and Parvati, the origins of Varanasi are yet unknown."
   ];
 
+ 
+  final Map<String, bool> isFavorite = {};
+
+  @override
+  void initState() {
+    super.initState();
+    openBox();
+  }
+
+  Future<void> openBox() async {
+    fava = await Hive.openBox<Favorite>('place');
+    loadFavorites();
+  }
+
+  void loadFavorites() {
+    final favoritePlaces = fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    setState(() {
+      for (var placeName in place) {
+        isFavorite[placeName] = favoritePlaces.contains(placeName);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Monuments'),
+        title: const Text('Islands'),
       ),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: 4,
+          itemCount: place.length,
           itemBuilder: (context, int index) {
             return GestureDetector(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>DescriptionPage5(title: text[index], imageUrl: pic[index], description: description[index])));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DescriptionPage5(
+                      title: place[index],
+                      imageUrl: img[index],
+                      description: description[index],
+                      latitude: getLatitude9(index),
+                      longitude: getLongitude10(index),
+                    ),
+                  ),
+                );
               },
               child: Container(
                 margin: const EdgeInsets.all(8),
@@ -43,38 +118,63 @@ class PageFive extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.amber,
                   image: DecorationImage(
-                      image: NetworkImage(pic[index]), fit: BoxFit.cover),
+                    image: NetworkImage(img[index]),
+                    fit: BoxFit.cover,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 5,
                       blurRadius: 7,
-                      offset: const Offset(0, 3),
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
                 height: 200,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Flex(
-                    direction: Axis.vertical,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            text[index],
+                            place[index],
                             style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                           IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.favorite_border,
-                                color: Colors.white,
-                              )),
+                            onPressed: () async {
+                              bool currentlyFavorite = isFavorite[place[index]] ?? false;
+                              if (currentlyFavorite) {
+                                var key = fava?.keys.firstWhere(
+                                    (key) => fava?.get(key)?.place == place[index],
+                                    orElse: () => null);
+                                if (key != null) {
+                                  await fava?.delete(key);
+                                }
+                              } else {
+                                Favorite favorite = Favorite(place[index]);
+                                await fava?.add(favorite);
+                              }
+
+                              setState(() {
+                                isFavorite[place[index]] = !currentlyFavorite;
+                              });
+                            },
+                            icon: Icon(
+                              isFavorite[place[index]] == true
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isFavorite[place[index]] == true
+                                  ? Colors.red
+                                  : Colors.white,
+                            ),
+                          ),
                         ],
                       ),
                     ],

@@ -5,9 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trip_plannerx/db/database_file/profile_db_function.dart';
 import 'package:trip_plannerx/screens/profile_screens/about.dart';
-import 'package:trip_plannerx/screens/profile_screens/addnotes.dart';
 import 'package:trip_plannerx/screens/profile_screens/blogs.dart';
 import 'package:trip_plannerx/screens/profile_screens/images.dart';
+import 'package:trip_plannerx/screens/profile_screens/privacy_page.dart';
+import 'package:trip_plannerx/screens/profile_screens/terms_page.dart';
 import 'package:trip_plannerx/widgets/alertboxprofile_edit_username.dart';
 import 'package:trip_plannerx/widgets/alertboxprofile_login.dart';
 
@@ -20,20 +21,22 @@ class BottomProfile extends StatefulWidget {
 
 class _BottomProfileState extends State<BottomProfile> {
   final List<IconData> items = [
-    Icons.edit_document,
     Icons.image_outlined,
     Icons.movie_edit,
     Icons.info_outline,
+    Icons.lock_outline,
+    Icons.description,
     Icons.logout
   ];
 
-  final List<String> text = ['Add Notes', 'Images', 'Blogs', 'About', 'LogOut'];
+  final List<String> text = ['Images', 'Blogs', 'About','Privacy','Terms', 'LogOut'];
 
   final List<Widget> screens = [
-    const AddNotes(),
-    const ImagesPage(),
-    const BlogsPage(),
+      const ImagesPage(tripId: -1,),
+       const BlogsPage(tripId: -1,),
     const AboutPage(),
+     const Privacy(),
+     const Terms(),
     const SizedBox(),
   ];
   final TextEditingController _nameController = TextEditingController();
@@ -107,7 +110,7 @@ class _BottomProfileState extends State<BottomProfile> {
                     text[index],
                     style: const TextStyle(color: Colors.black),
                   ),
-                  onTap: index == 4
+                  onTap: index == 5
                       ? () => showLogoutDialogue()
                       : () => Navigator.push(
                             context,

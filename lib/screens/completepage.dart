@@ -6,7 +6,7 @@ import 'package:trip_plannerx/screens/profile_screens/blogs.dart';
 import 'package:trip_plannerx/screens/profile_screens/images.dart';
 
 class CompletePage extends StatefulWidget {
-  const CompletePage({super.key});
+  const CompletePage({Key? key}) : super(key: key);
 
   @override
   State<CompletePage> createState() => _CompletePageState();
@@ -18,16 +18,16 @@ class _CompletePageState extends State<CompletePage> {
   @override
   void initState() {
     super.initState();
-    initializeBox(); 
+    initializeBox();
   }
 
   Future<void> initializeBox() async {
     if (!Hive.isBoxOpen('completedTrips')) {
-      completedBox = await Hive.openBox<Schedule>('completedTrips'); // Open the box if not open
+      completedBox = await Hive.openBox<Schedule>('completedTrips');
     } else {
-      completedBox = Hive.box<Schedule>('completedTrips'); // Otherwise, get the existing box
+      completedBox = Hive.box<Schedule>('completedTrips');
     }
-    setState(() {}); 
+    setState(() {});
   }
 
   @override
@@ -35,11 +35,17 @@ class _CompletePageState extends State<CompletePage> {
     if (completedBox == null) {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(), 
+          child: CircularProgressIndicator(),
         ),
       );
     }
-
+    if (completedBox!.isEmpty) {
+      return const Scaffold(
+        body: Center(
+          child: Text('No completed trips yet.'),
+        ),
+      );
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -48,7 +54,7 @@ class _CompletePageState extends State<CompletePage> {
           itemBuilder: (context, index) {
             final schedule = completedBox!.getAt(index);
             if (schedule == null) {
-              return const SizedBox.shrink(); // No schedule, return empty space
+              return const SizedBox.shrink();
             }
 
             return Card(
@@ -59,39 +65,57 @@ class _CompletePageState extends State<CompletePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 8),
-                    const Text("Companions:",style: TextStyle(fontWeight: FontWeight.w500),),
-                    for (final companion in schedule.companion)
-                      Text(companion),
-                      const SizedBox(height: 8,),
+                    const Text(
+                      "Companions:",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    for (final companion in schedule.companion) Text(companion),
+                    const SizedBox(height: 8,),
                     Text("Start Date: ${DateFormat("EEEE, MMMM d, yyyy").format(schedule.startDate)}"),
                     Text("End Date: ${DateFormat("EEEE, MMMM d, yyyy").format(schedule.endDate)}"),
                     const SizedBox(height: 5,),
                     Text("Splitted Amount: ${schedule.splitAmount ?? 'None'}"),
-                   const SizedBox(height: 5,),
-                   const Divider(),
+                    const SizedBox(height: 5,),
+                    const Divider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const ImagesPage()));
-                      }, child: const Text('Add Image')),
-                      ElevatedButton(onPressed: (){
-                                   Navigator.push(context, MaterialPageRoute(builder: (context)=> const BlogsPage()),);
-                      }, child: const Text('Add Blogs')),
-                    ],
-                   )
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImagesPage(tripId: index), // Pass the tripId to ImagesPage
+                              ),
+                            );
+                          },
+                          child: const Text('Add Image'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlogsPage(tripId: index), // Pass the tripId to BlogsPage
+                              ),
+                            );
+                          },
+                          child: const Text('Add Blogs'),
+                        ),
+                      ],
+                    )
                   ],
                 ),
-                trailing: Row(
+                trailing:  Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.check_circle, color: Colors.green), 
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red), 
-                      onPressed: () {
-                        _confirmDelete(context, index); //delete dialogue
-                      },
-                    ),
+                    const Icon(Icons.check_circle, color: Colors.green),
+                    IconButton(icon: const Icon(Icons.delete),
+                    color: Colors.red,
+                    onPressed: (){
+                        _showDeleteConfirmationDialog(index);
+                    },
+                    )
                   ],
                 ),
               ),
@@ -102,27 +126,35 @@ class _CompletePageState extends State<CompletePage> {
     );
   }
 
-  void _confirmDelete(BuildContext context, int index) {
-    showDialog(
+  Future<void> _showDeleteConfirmationDialog(int index) async {
+    return showDialog<void>(
       context: context,
-      builder: (context) {
+      barrierDismissible: false, 
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Confirm Deletion"),
-          content: const Text("Are you sure you want to delete this schedule?"),
-          actions: [
+          title: const Text('Delete Confirmation'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete this item?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
             TextButton(
+              child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close without deleting
+                Navigator.of(context).pop();
               },
-              child: const Text("Cancel"),
             ),
             TextButton(
+              child: const Text('Delete'),
               onPressed: () {
-                completedBox!.deleteAt(index); 
-                setState(() {});
-                Navigator.of(context).pop(); 
+                setState(() {
+                  completedBox!.deleteAt(index);
+                });
+                Navigator.of(context).pop();
               },
-              child: const Text("Delete"),
             ),
           ],
         );
@@ -132,7 +164,7 @@ class _CompletePageState extends State<CompletePage> {
 
   @override
   void dispose() {
-    completedBox?.close(); 
+    completedBox?.close();
     super.dispose();
   }
 }
