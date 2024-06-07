@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page3.dart';
+
 double getLatitude5(int index) {
   switch (index) {
     case 0:
@@ -29,6 +30,7 @@ double getLongitude6(int index) {
       return 0.0;
   }
 }
+
 class PageThree extends StatefulWidget {
   const PageThree({super.key});
 
@@ -37,7 +39,7 @@ class PageThree extends StatefulWidget {
 }
 
 class _PageThreeState extends State<PageThree> {
-    Box<Favorite>? fava;
+  Box<Favorite>? fava;
 
   final List<String> img = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Athirapally_Waterfalls_after_the_Monsoons.jpg/1200px-Athirapally_Waterfalls_after_the_Monsoons.jpg",
@@ -57,7 +59,6 @@ class _PageThreeState extends State<PageThree> {
     "Dudhsagar Waterfall is situated inside the Bhagwan Mahavir wildlife sanctuary in Sanguem district of Goa close to the border with Karnataka. It is about 60 km from state capital Panaji. Water plummets from a height of over 1,000 ft to form one of the most amazing natural phenomena in Goa."
   ];
 
-  
   final Map<String, bool> isFavorite = {};
 
   @override
@@ -72,7 +73,8 @@ class _PageThreeState extends State<PageThree> {
   }
 
   void loadFavorites() {
-    final favoritePlaces = fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    final favoritePlaces =
+        fava?.values.map((favorite) => favorite.place).toList() ?? [];
     setState(() {
       for (var placeName in place) {
         isFavorite[placeName] = favoritePlaces.contains(placeName);
@@ -109,7 +111,7 @@ class _PageThreeState extends State<PageThree> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.amber,
+                  color: const Color.fromARGB(255, 218, 216, 207),
                   image: DecorationImage(
                     image: NetworkImage(img[index]),
                     fit: BoxFit.cover,
@@ -142,10 +144,12 @@ class _PageThreeState extends State<PageThree> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              bool currentlyFavorite = isFavorite[place[index]] ?? false;
+                              bool currentlyFavorite =
+                                  isFavorite[place[index]] ?? false;
                               if (currentlyFavorite) {
                                 var key = fava?.keys.firstWhere(
-                                    (key) => fava?.get(key)?.place == place[index],
+                                    (key) =>
+                                        fava?.get(key)?.place == place[index],
                                     orElse: () => null);
                                 if (key != null) {
                                   await fava?.delete(key);

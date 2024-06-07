@@ -2,32 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page5.dart';
+
 double getLatitude9(int index) {
   switch (index) {
     case 0:
       return 27.173891;
     case 1:
-      return 28.5245; 
+      return 28.5245;
     case 2:
-      return 28.6562; 
+      return 28.6562;
     case 3:
-      return 25.3176; 
+      return 25.3176;
     default:
       return 0.0;
   }
 }
 
 double getLongitude10(int index) {
-  
   switch (index) {
     case 0:
-      return 78.042068; 
+      return 78.042068;
     case 1:
-      return 77.1855; 
+      return 77.1855;
     case 2:
-      return 77.2410; 
+      return 77.2410;
     case 3:
-      return 82.9739; 
+      return 82.9739;
     default:
       return 0.0;
   }
@@ -41,7 +41,7 @@ class PageFive extends StatefulWidget {
 }
 
 class _PageFiveState extends State<PageFive> {
-    Box<Favorite>? fava;
+  Box<Favorite>? fava;
 
   final List<String> img = [
     "https://miro.medium.com/v2/resize:fit:1400/format:webp/0*uEnJuRoUCKEUZZI_.jpg",
@@ -64,7 +64,6 @@ class _PageFiveState extends State<PageFive> {
     "The land of Varanasi (Kashi) has been the ultimate pilgrimage spot for Hindus for ages. Hindus believe that one who is graced to die on the land of Varanasi would attain salvation and freedom from the cycle of birth and re-birth. Abode of Lord Shiva and Parvati, the origins of Varanasi are yet unknown."
   ];
 
- 
   final Map<String, bool> isFavorite = {};
 
   @override
@@ -79,7 +78,8 @@ class _PageFiveState extends State<PageFive> {
   }
 
   void loadFavorites() {
-    final favoritePlaces = fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    final favoritePlaces =
+        fava?.values.map((favorite) => favorite.place).toList() ?? [];
     setState(() {
       for (var placeName in place) {
         isFavorite[placeName] = favoritePlaces.contains(placeName);
@@ -116,7 +116,7 @@ class _PageFiveState extends State<PageFive> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.amber,
+                  color: const Color.fromARGB(255, 218, 216, 207),
                   image: DecorationImage(
                     image: NetworkImage(img[index]),
                     fit: BoxFit.cover,
@@ -149,10 +149,12 @@ class _PageFiveState extends State<PageFive> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              bool currentlyFavorite = isFavorite[place[index]] ?? false;
+                              bool currentlyFavorite =
+                                  isFavorite[place[index]] ?? false;
                               if (currentlyFavorite) {
                                 var key = fava?.keys.firstWhere(
-                                    (key) => fava?.get(key)?.place == place[index],
+                                    (key) =>
+                                        fava?.get(key)?.place == place[index],
                                     orElse: () => null);
                                 if (key != null) {
                                   await fava?.delete(key);

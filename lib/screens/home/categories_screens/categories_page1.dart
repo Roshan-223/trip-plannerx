@@ -4,30 +4,31 @@ import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page1.dart';
 
 double getLatitude1(int index) {
-    switch (index) {
-      case 0:
-        return 21.1240; 
-      case 1:
-        return 26.6593; 
-      case 2:
-        return 31.7414; 
-      default:
-        return 0.0;
-    }
+  switch (index) {
+    case 0:
+      return 21.1240;
+    case 1:
+      return 26.6593;
+    case 2:
+      return 31.7414;
+    default:
+      return 0.0;
   }
+}
 
-  double getLongitude2(int index) {
-    switch (index) {
-      case 0:
-        return 70.8022; 
-      case 1:
-        return 91.0159; 
-      case 2:
-        return 77.3684; 
-      default:
-        return 0.0;
-    }
+double getLongitude2(int index) {
+  switch (index) {
+    case 0:
+      return 70.8022;
+    case 1:
+      return 91.0159;
+    case 2:
+      return 77.3684;
+    default:
+      return 0.0;
   }
+}
+
 class PageOne extends StatefulWidget {
   const PageOne({Key? key}) : super(key: key);
 
@@ -66,7 +67,8 @@ class _PageOneState extends State<PageOne> {
   }
 
   void loadFavorites() {
-    final favoritePlaces = fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    final favoritePlaces =
+        fava?.values.map((favorite) => favorite.place).toList() ?? [];
     setState(() {
       for (var placeName in place) {
         isFavorite[placeName] = favoritePlaces.contains(placeName);
@@ -93,7 +95,7 @@ class _PageOneState extends State<PageOne> {
                       title: place[index],
                       imageUrl: img[index],
                       description: descriptions[index],
-                       latitude: getLatitude1(index),
+                      latitude: getLatitude1(index),
                       longitude: getLongitude2(index),
                     ),
                   ),
@@ -103,7 +105,7 @@ class _PageOneState extends State<PageOne> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.amber,
+                  color: const Color.fromARGB(255, 218, 216, 207),
                   image: DecorationImage(
                     image: NetworkImage(img[index]),
                     fit: BoxFit.cover,
@@ -136,10 +138,12 @@ class _PageOneState extends State<PageOne> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              bool currentlyFavorite = isFavorite[place[index]] ?? false;
+                              bool currentlyFavorite =
+                                  isFavorite[place[index]] ?? false;
                               if (currentlyFavorite) {
                                 var key = fava?.keys.firstWhere(
-                                    (key) => fava?.get(key)?.place == place[index],
+                                    (key) =>
+                                        fava?.get(key)?.place == place[index],
                                     orElse: () => null);
                                 if (key != null) {
                                   await fava?.delete(key);

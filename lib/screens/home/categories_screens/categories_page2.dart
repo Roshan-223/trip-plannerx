@@ -3,33 +3,32 @@ import 'package:hive/hive.dart';
 import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/decription_page2.dart';
 
-
 double getLatitude3(int index) {
-     switch (index) {
+  switch (index) {
     case 0:
       return 11.6084;
     case 1:
       return 10.5667;
     case 2:
-      return 8.99313;  
+      return 8.99313;
     default:
       return 0.0;
   }
 }
 
-  double getLongitude4(int index) {
-
+double getLongitude4(int index) {
   switch (index) {
     case 0:
-      return 92.3484; 
+      return 92.3484;
     case 1:
-      return 72.6417; 
+      return 72.6417;
     case 2:
-      return 76.62417; 
+      return 76.62417;
     default:
       return 0.0;
   }
 }
+
 class PageTwo extends StatefulWidget {
   const PageTwo({super.key});
 
@@ -38,7 +37,7 @@ class PageTwo extends StatefulWidget {
 }
 
 class _PageTwoState extends State<PageTwo> {
-    Box<Favorite>? fava;
+  Box<Favorite>? fava;
 
   final List<String> img = [
     "https://visatoexplore.in/wp-content/uploads/2021/01/Kalapathher-1024x682.jpg",
@@ -68,7 +67,8 @@ class _PageTwoState extends State<PageTwo> {
   }
 
   void loadFavorites() {
-    final favoritePlaces = fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    final favoritePlaces =
+        fava?.values.map((favorite) => favorite.place).toList() ?? [];
     setState(() {
       for (var placeName in place) {
         isFavorite[placeName] = favoritePlaces.contains(placeName);
@@ -95,7 +95,7 @@ class _PageTwoState extends State<PageTwo> {
                       title: place[index],
                       imageUrl: img[index],
                       description: description[index],
-                        latitude: getLatitude3(index),
+                      latitude: getLatitude3(index),
                       longitude: getLongitude4(index),
                     ),
                   ),
@@ -105,7 +105,7 @@ class _PageTwoState extends State<PageTwo> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.amber,
+                  color: const Color.fromARGB(255, 218, 216, 207),
                   image: DecorationImage(
                     image: NetworkImage(img[index]),
                     fit: BoxFit.cover,
@@ -138,10 +138,12 @@ class _PageTwoState extends State<PageTwo> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              bool currentlyFavorite = isFavorite[place[index]] ?? false;
+                              bool currentlyFavorite =
+                                  isFavorite[place[index]] ?? false;
                               if (currentlyFavorite) {
                                 var key = fava?.keys.firstWhere(
-                                    (key) => fava?.get(key)?.place == place[index],
+                                    (key) =>
+                                        fava?.get(key)?.place == place[index],
                                     orElse: () => null);
                                 if (key != null) {
                                   await fava?.delete(key);

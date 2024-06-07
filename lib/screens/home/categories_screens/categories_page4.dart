@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page4.dart';
-double getLatitude7(int index) { 
+
+double getLatitude7(int index) {
   switch (index) {
     case 0:
-      return 8.73635; 
+      return 8.73635;
     case 1:
-      return 10.10201; 
+      return 10.10201;
     case 2:
-      return 8.38911; 
+      return 8.38911;
     case 3:
-      return 15.2993; 
+      return 15.2993;
     default:
       return 0.0;
   }
@@ -20,17 +21,18 @@ double getLatitude7(int index) {
 double getLongitude8(int index) {
   switch (index) {
     case 0:
-      return 76.70328; 
+      return 76.70328;
     case 1:
-      return 76.18905; 
+      return 76.18905;
     case 2:
-      return 76.97609; 
+      return 76.97609;
     case 3:
       return 74.1240;
     default:
       return 0.0;
   }
 }
+
 class PageFour extends StatefulWidget {
   const PageFour({super.key});
 
@@ -39,7 +41,7 @@ class PageFour extends StatefulWidget {
 }
 
 class _PageFourState extends State<PageFour> {
-     Box<Favorite>? fava;
+  Box<Favorite>? fava;
   final List<String> img = [
     "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/c8/f1/cb/varkala-beach.jpg?w=1200&h=-1&s=1",
     "https://trip2kerala.com/wp-content/uploads/2022/01/800px-Kuzhupilly_Be.jpg",
@@ -75,7 +77,8 @@ class _PageFourState extends State<PageFour> {
   }
 
   void loadFavorites() {
-    final favoritePlaces = fava?.values.map((favorite) => favorite.place).toList() ?? [];
+    final favoritePlaces =
+        fava?.values.map((favorite) => favorite.place).toList() ?? [];
     setState(() {
       for (var placeName in place) {
         isFavorite[placeName] = favoritePlaces.contains(placeName);
@@ -112,7 +115,7 @@ class _PageFourState extends State<PageFour> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.amber,
+                  color: const Color.fromARGB(255, 218, 216, 207),
                   image: DecorationImage(
                     image: NetworkImage(img[index]),
                     fit: BoxFit.cover,
@@ -145,10 +148,12 @@ class _PageFourState extends State<PageFour> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              bool currentlyFavorite = isFavorite[place[index]] ?? false;
+                              bool currentlyFavorite =
+                                  isFavorite[place[index]] ?? false;
                               if (currentlyFavorite) {
                                 var key = fava?.keys.firstWhere(
-                                    (key) => fava?.get(key)?.place == place[index],
+                                    (key) =>
+                                        fava?.get(key)?.place == place[index],
                                     orElse: () => null);
                                 if (key != null) {
                                   await fava?.delete(key);

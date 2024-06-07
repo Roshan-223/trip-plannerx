@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:trip_plannerx/model/favorite_db.dart';
 import 'package:trip_plannerx/screens/home/inside_categories_screens/description_page0.dart';
+
 double getLatitude(int index) {
   switch (index) {
     case 0:
@@ -53,7 +54,7 @@ class _PagezeroState extends State<Pagezero> {
     'Manali',
     'Top station',
     'Illikalkallu',
-    'Dophin Nose'    
+    'Dophin Nose'
   ];
 
   final List<String> descriptions = [
@@ -115,7 +116,7 @@ class _PagezeroState extends State<Pagezero> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.amber,
+                  color: const Color.fromARGB(255, 218, 216, 207),
                   image: DecorationImage(
                     image: NetworkImage(img[index]),
                     fit: BoxFit.cover,
